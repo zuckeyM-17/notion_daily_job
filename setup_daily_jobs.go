@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/zuckeyM-17/setup_daily_jobs/notion"
+	"setup_daily_jobs/notion"
 )
 
 func main() {

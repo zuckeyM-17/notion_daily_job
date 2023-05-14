@@ -1,4 +1,4 @@
-module github.com/zuckeyM-17/setup_daily_jobs
+module setup_daily_jobs
 
 go 1.20
 
