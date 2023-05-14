@@ -12,12 +12,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Golang
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.20
+
+      - name: Set up env
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          DAILY_TASK_DATABASE_ID: ${{ secrets.DAILY_TASK_DATABASE_ID }}
 
       - name: Run Script
         run: |
