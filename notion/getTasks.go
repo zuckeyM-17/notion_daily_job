@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
+
+	"setup_daily_jobs/util"
 )
 
 type Task struct {
@@ -29,12 +31,12 @@ type Task struct {
 	}
 	Name struct {
 		Title []struct {
-			plain_text string
+			PlainText string
 		}
 	}
 }
 
-func GetTasks(notionToken, databaseId string) []Task {
+func GetTasks(notionToken, databaseId string) ([]Task, error) {
 	var (
 		uri           = "https://api.notion.com/v1/databases/" + databaseId + "/query"
 		auth          = "Bearer " + notionToken
@@ -70,8 +72,11 @@ func GetTasks(notionToken, databaseId string) []Task {
 	}`
 	replaced := strings.Replace(data, "START_DATE", time.Now().Format("2006-01-02"), 1)
 
-	req, _ := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(replaced)))
-	// TODO: エラー処理
+	req, err := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(replaced)))
+	if err != nil {
+		util.ErrLog(err)
+		return []Task{}, err
+	}
 
 	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("Authorization", auth)
@@ -80,7 +85,10 @@ func GetTasks(notionToken, databaseId string) []Task {
 	client := &http.Client{}
 
 	res, _ := client.Do(req)
-	// TODO: エラー処理
+	if err != nil {
+		util.ErrLog(err)
+		return []Task{}, err
+	}
 	defer res.Body.Close()
 
 	r, _ := io.ReadAll(res.Body)
@@ -90,5 +98,5 @@ func GetTasks(notionToken, databaseId string) []Task {
 	results := gjson.Get(jsonStr, "results").String()
 	json.Unmarshal([]byte(results), &tasks)
 
-	return tasks
+	return tasks, nil
 }

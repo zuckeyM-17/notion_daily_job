@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"setup_daily_jobs/notion"
@@ -16,5 +17,9 @@ func main() {
 		databaseId  = os.Getenv("DAILY_TASK_DATABASE_ID")
 	)
 
-	notion.GetTasks(notionToken, databaseId)
+	tasks, _ := notion.GetTasks(notionToken, databaseId)
+
+	for _, task := range tasks {
+		fmt.Println(task.Name.Title)
+	}
 }
