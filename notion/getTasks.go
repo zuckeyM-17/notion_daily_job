@@ -3,15 +3,38 @@ package notion
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
+	"strings"
+	"time"
+
+	"github.com/tidwall/gjson"
 )
 
 type Task struct {
+	Id         string
+	Url        string
+	Properties struct {
+		Status struct {
+			multi_select []struct {
+				Name string
+			}
+		}
+		Template struct {
+			checkbox bool
+		}
+		start_date struct {
+			date *string
+		}
+	}
+	Name struct {
+		Title []struct {
+			plain_text string
+		}
+	}
 }
 
-func GetTasks(notionToken, databaseId string) {
+func GetTasks(notionToken, databaseId string) []Task {
 	var (
 		uri           = "https://api.notion.com/v1/databases/" + databaseId + "/query"
 		auth          = "Bearer " + notionToken
@@ -21,27 +44,51 @@ func GetTasks(notionToken, databaseId string) {
 
 	type SearchData struct{}
 
-	data := SearchData{}
+	data := `{
+    "filter": {
+			"or": [
+					{
+						"property": "template",
+						"checkbox": {
+							"equals": true
+						}
+					},
+					{
+						"property": "start_date",
+						"date": {
+							"equals": "START_DATE"
+						}
+					},
+					{
+						"property": "finish",
+						"checkbox": {
+							"equals": false
+					}
+				}
+			]
+    }
+	}`
+	replaced := strings.Replace(data, "START_DATE", time.Now().Format("2006-01-02"), 1)
 
-	d, _ := json.Marshal(data)
-
-	req, _ := http.NewRequest("POST", uri, bytes.NewBuffer(d))
+	req, _ := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(replaced)))
 	// TODO: エラー処理
 
 	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("Authorization", auth)
 	req.Header.Add("Notion-Version", notionVersion)
 
-	var (
-		client = &http.Client{}
-	)
+	client := &http.Client{}
 
 	res, _ := client.Do(req)
 	// TODO: エラー処理
 	defer res.Body.Close()
 
 	r, _ := io.ReadAll(res.Body)
-	json := string(r)
+	jsonStr := string(r)
 
-	fmt.Println(json)
+	var tasks []Task
+	results := gjson.Get(jsonStr, "results").String()
+	json.Unmarshal([]byte(results), &tasks)
+
+	return tasks
 }
