@@ -13,16 +13,20 @@ import (
 	"setup_daily_jobs/util"
 )
 
-type MultiSelect struct {
-	Name string
+type Select struct {
+	Name string `json:"name"`
 }
 
 type Status struct {
-	MultiSelect []MultiSelect `json:"multi_select"`
+	Select Select `json:"select"`
 }
 
 type Template struct {
 	Checkbox bool `json:"checkbox"`
+}
+
+type Date struct {
+	Start string `json:"start"`
 }
 
 type StartDate struct {
@@ -61,24 +65,28 @@ func GetTasks(notionToken, databaseId string) ([]Task, error) {
 
 	data := `{
     "filter": {
-			"or": [
-					{
-						"property": "template",
-						"checkbox": {
-							"equals": true
-						}
-					},
-					{
-						"property": "start_date",
-						"date": {
-							"equals": "START_DATE"
-						}
-					},
-					{
-						"property": "finish",
-						"checkbox": {
-							"equals": false
+			"and": [
+				{
+					"property": "finish",
+					"checkbox": {
+						"equals": false
 					}
+				},
+				{
+					"or": [
+						{
+							"property": "start_date",
+							"date": {
+								"equals": "START_DATE"
+							}
+						},
+						{
+							"property": "template",
+							"checkbox": {
+								"equals": true
+							}
+						}
+					]
 				}
 			]
     }
