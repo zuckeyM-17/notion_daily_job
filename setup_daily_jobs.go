@@ -3,9 +3,18 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"setup_daily_jobs/notion"
 )
+
+func init() {
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
+	time.Local = jst
+}
 
 func main() {
 	var (
