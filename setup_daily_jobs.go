@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"setup_daily_jobs/notion"
@@ -15,6 +16,7 @@ func main() {
 	tasks, _ := notion.GetTasks(notionToken, databaseId)
 
 	for _, task := range tasks {
+		fmt.Println(task.Properties.Name.Title[0].PlainText)
 		notion.UpdateTask(notionToken, databaseId, task.Id)
 	}
 }
