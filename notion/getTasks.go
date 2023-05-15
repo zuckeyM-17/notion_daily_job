@@ -13,27 +13,40 @@ import (
 	"setup_daily_jobs/util"
 )
 
+type MultiSelect struct {
+	Name string
+}
+
+type Status struct {
+	MultiSelect []MultiSelect `json:"multi_select"`
+}
+
+type Template struct {
+	Checkbox bool `json:"checkbox"`
+}
+
+type StartDate struct {
+	Date string `json:"date"`
+}
+
+type Properties struct {
+	Name      Name      `json:"name"`
+	Status    Status    `json:"status"`
+	Template  Template  `json:"template"`
+	StartDate StartDate `json:"start_date"`
+}
+
+type Title struct {
+	PlainText string `json:"plain_text"`
+}
+type Name struct {
+	Title []Title `json:"title"`
+}
+
 type Task struct {
-	Id         string
-	Url        string
-	Properties struct {
-		Status struct {
-			multi_select []struct {
-				Name string
-			}
-		}
-		Template struct {
-			checkbox bool
-		}
-		start_date struct {
-			date *string
-		}
-	}
-	Name struct {
-		Title []struct {
-			PlainText string
-		}
-	}
+	Id         string     `json:"id"`
+	Url        string     `json:"url"`
+	Properties Properties `json:"properties"`
 }
 
 func GetTasks(notionToken, databaseId string) ([]Task, error) {

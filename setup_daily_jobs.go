@@ -8,10 +8,6 @@ import (
 )
 
 func main() {
-	// fmt.Println("Hello World")
-	// fmt.Println("NOTION_API_TOKEN: ", os.Getenv("NOTION_API_TOKEN"))
-	// fmt.Println("DAILY_TASK_DATABASE_ID: ", os.Getenv("DAILY_TASK_DATABASE_ID"))
-
 	var (
 		notionToken = os.Getenv("NOTION_API_TOKEN")
 		databaseId  = os.Getenv("DAILY_TASK_DATABASE_ID")
@@ -20,6 +16,11 @@ func main() {
 	tasks, _ := notion.GetTasks(notionToken, databaseId)
 
 	for _, task := range tasks {
-		fmt.Println(task.Name.Title)
+		fmt.Println(task.Id)
+		fmt.Println(task.Properties.Name.Title[0].PlainText)
+		fmt.Println(task.Properties.Status.MultiSelect[0].Name)
+		fmt.Println(task.Properties.Template.Checkbox)
+		fmt.Println(task.Properties.StartDate.Date)
+		fmt.Println("====================================")
 	}
 }
