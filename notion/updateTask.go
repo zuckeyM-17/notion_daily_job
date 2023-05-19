@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func UpdateTask(notionToken, databaseId, pageId string) {
+func UpdateTask(notionToken, databaseId string, task Task) {
 	var (
-		uri           = "https://api.notion.com/v1/pages/" + pageId
+		uri           = "https://api.notion.com/v1/pages/" + task.Id
 		auth          = "Bearer " + notionToken
 		contentType   = "application/json"
 		notionVersion = "2022-06-28"
@@ -18,6 +18,11 @@ func UpdateTask(notionToken, databaseId, pageId string) {
 
 	data := `{
 		"properties": {
+			"name": {
+				"title": [
+					{ "text": { "content": "TITLE" } }
+				]
+			},
 			"start_date": {
 				"date": { "start": "START_DATE" }
 			},
@@ -27,7 +32,11 @@ func UpdateTask(notionToken, databaseId, pageId string) {
 		}
 	}`
 
-	replaced := strings.Replace(data, "START_DATE", time.Now().Format("2006-01-02"), 1)
+	today := time.Now().Format("2006-01-02")
+	replaced := strings.Replace(data, "START_DATE", today, 1)
+	if task.Properties.Template.Checkbox {
+		replaced = strings.Replace(replaced, "TITLE", "["+today+"] "+task.Properties.Name.Title[0].PlainText, 1)
+	}
 
 	req, err := http.NewRequest("PATCH", uri, bytes.NewBuffer([]byte(replaced)))
 

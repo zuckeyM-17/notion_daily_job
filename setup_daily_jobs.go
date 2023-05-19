@@ -24,6 +24,6 @@ func main() {
 	tasks, _ := notion.GetTasks(notionToken, databaseId)
 
 	for _, task := range tasks {
-		notion.UpdateTask(notionToken, databaseId, task.Id)
+		notion.UpdateTask(notionToken, databaseId, task)
 	}
 }
