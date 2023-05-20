@@ -29,5 +29,5 @@ jobs:
           NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
           DAILY_TASK_DATABASE_ID: ${{ secrets.DAILY_TASK_DATABASE_ID }}
         run: |
-          go run setup_daily_jobs.go
+          go run setup_daily_jobs/main.go
 
