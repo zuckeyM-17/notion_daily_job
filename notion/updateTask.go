@@ -34,9 +34,15 @@ func UpdateTask(notionToken, databaseId string, task Task) {
 
 	today := time.Now().Format("2006-01-02")
 	replaced := strings.Replace(data, "START_DATE", today, 1)
+
+	var taskName string
 	if task.Properties.Template.Checkbox {
-		replaced = strings.Replace(replaced, "TITLE", "["+today+"] "+task.Properties.Name.Title[0].PlainText, 1)
+		taskName = "[" + today + "] " + task.Properties.Name.Title[0].PlainText
+	} else {
+		taskName = task.Properties.Name.Title[0].PlainText
 	}
+
+	replaced = strings.Replace(replaced, "TITLE", taskName, 1)
 
 	req, err := http.NewRequest("PATCH", uri, bytes.NewBuffer([]byte(replaced)))
 
