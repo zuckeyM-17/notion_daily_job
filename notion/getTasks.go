@@ -49,6 +49,7 @@ type Task struct {
 	Id         string     `json:"id"`
 	Url        string     `json:"url"`
 	Properties Properties `json:"properties"`
+	UpdatedAt  string     `json:"last_edited_time"`
 }
 
 func GetTasks(notionToken, databaseId, query string) ([]Task, error) {
