@@ -40,7 +40,34 @@ func main() {
 
 	tasks, _ := notion.GetTasks(notionToken, databaseId, query)
 
+	propertiesTemplate := `{
+		"properties": {
+			"name": {
+				"title": [
+					{ "text": { "content": "TITLE" } }
+				]
+			},
+			"start_date": {
+				"date": { "start": "START_DATE" }
+			},
+			"status": {
+				"select": {"name": "今日の作業"}
+			}
+		}
+	}`
+
+	today := time.Now().Format("2006-01-02")
+	propertiesTemplate = strings.Replace(propertiesTemplate, "START_DATE", today, 1)
+
 	for _, task := range tasks {
-		notion.UpdateTask(notionToken, databaseId, task)
+		var taskName string
+		if task.Properties.Template.Checkbox {
+			taskName = "[" + today + "] " + task.Properties.Name.Title[0].PlainText
+		} else {
+			taskName = task.Properties.Name.Title[0].PlainText
+		}
+
+		properties := strings.Replace(propertiesTemplate, "TITLE", taskName, 1)
+		notion.UpdateTask(notionToken, databaseId, task, properties)
 	}
 }
