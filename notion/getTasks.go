@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/tidwall/gjson"
 
@@ -53,7 +51,7 @@ type Task struct {
 	Properties Properties `json:"properties"`
 }
 
-func GetTasks(notionToken, databaseId string) ([]Task, error) {
+func GetTasks(notionToken, databaseId, query string) ([]Task, error) {
 	var (
 		uri           = "https://api.notion.com/v1/databases/" + databaseId + "/query"
 		auth          = "Bearer " + notionToken
@@ -63,37 +61,7 @@ func GetTasks(notionToken, databaseId string) ([]Task, error) {
 
 	type SearchData struct{}
 
-	data := `{
-    "filter": {
-			"and": [
-				{
-					"property": "finish",
-					"checkbox": {
-						"equals": false
-					}
-				},
-				{
-					"or": [
-						{
-							"property": "start_date",
-							"date": {
-								"equals": "START_DATE"
-							}
-						},
-						{
-							"property": "template",
-							"checkbox": {
-								"equals": true
-							}
-						}
-					]
-				}
-			]
-    }
-	}`
-	replaced := strings.Replace(data, "START_DATE", time.Now().Format("2006-01-02"), 1)
-
-	req, err := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(replaced)))
+	req, err := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(query)))
 	if err != nil {
 		util.ErrLog(err)
 		return []Task{}, err
