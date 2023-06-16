@@ -41,4 +41,25 @@ func main() {
 	for _, task := range tasks {
 		fmt.Println(task.Properties.Name.Title[0].PlainText)
 	}
+
+	propertiesTemplate := `{
+		"properties": {
+			"name": {
+				"title": [
+					{ "text": { "content": "TITLE" } }
+				]
+			},
+			"start_date": {
+				"date": { "start": "START_DATE" }
+			},
+			"status": {
+				"select": {"name": "今日の作業"}
+			}
+		}
+	}`
+
+	today := time.Now().Format("2006-01-02")
+	propertiesTemplate = strings.Replace(propertiesTemplate, "START_DATE", today, 1)
+
+	notion.CreateTask(notionToken, databaseId, propertiesTemplate)
 }
