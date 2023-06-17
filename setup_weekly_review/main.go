@@ -43,6 +43,7 @@ func main() {
 	}
 
 	propertiesTemplate := `{
+		"parent": { "database_id": "DATABASE_ID" },
 		"properties": {
 			"name": {
 				"title": [
@@ -58,8 +59,9 @@ func main() {
 		}
 	}`
 
+	propertiesTemplate = strings.Replace(propertiesTemplate, "DATABASE_ID", databaseId, 1)
 	today := time.Now().Format("2006-01-02")
 	propertiesTemplate = strings.Replace(propertiesTemplate, "START_DATE", today, 1)
 
-	notion.CreateTask(notionToken, databaseId, propertiesTemplate)
+	notion.CreateTask(notionToken, propertiesTemplate)
 }

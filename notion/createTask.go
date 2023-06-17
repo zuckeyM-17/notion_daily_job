@@ -6,7 +6,7 @@ import (
 	"setup_daily_jobs/util"
 )
 
-func CreateTask(notionToken, databaseId string, properties string) {
+func CreateTask(notionToken, properties string) {
 	var (
 		uri           = "https://api.notion.com/v1/pages/"
 		auth          = "Bearer " + notionToken
