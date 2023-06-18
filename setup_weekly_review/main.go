@@ -33,8 +33,10 @@ func main() {
     }
 	}`
 
-	query = strings.Replace(query, "START_DATE", time.Now().AddDate(0, 0, -7).Format("2006-01-02"), 1)
-	query = strings.Replace(query, "END_DATE", time.Now().Format("2006-01-02"), 1)
+	startDate := time.Now().AddDate(0, 0, -7).Format("2006-01-02")
+	endDate := time.Now().Format("2006-01-02")
+	query = strings.Replace(query, "START_DATE", startDate, 1)
+	query = strings.Replace(query, "END_DATE", endDate, 1)
 
 	tasks, _ := notion.GetTasks(notionToken, databaseId, query)
 
@@ -42,7 +44,7 @@ func main() {
 		fmt.Println(task.Properties.Name.Title[0].PlainText)
 	}
 
-	propertiesTemplate := `{
+	properties := `{
 		"parent": { "database_id": "DATABASE_ID" },
 		"properties": {
 			"name": {
@@ -55,13 +57,17 @@ func main() {
 			},
 			"status": {
 				"select": {"name": "今日の作業"}
+			},
+			"category": {
+				"select": { "name": "Skill" }
 			}
 		}
 	}`
 
-	propertiesTemplate = strings.Replace(propertiesTemplate, "DATABASE_ID", databaseId, 1)
+	properties = strings.Replace(properties, "DATABASE_ID", databaseId, 1)
 	today := time.Now().Format("2006-01-02")
-	propertiesTemplate = strings.Replace(propertiesTemplate, "START_DATE", today, 1)
+	properties = strings.Replace(properties, "START_DATE", today, 1)
+	properties = strings.Replace(properties, "TITLE", "["+startDate+" - "+endDate+"]週次振り返り", 1)
 
-	notion.CreateTask(notionToken, propertiesTemplate)
+	notion.CreateTask(notionToken, properties)
 }
