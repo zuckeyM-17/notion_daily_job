@@ -58,7 +58,23 @@ func main() {
 			"category": {
 				"select": { "name": "Skill" }
 			}
-		}
+		},
+		"children":	[
+			{
+				"object": "block",
+				"type": "paragraph",
+				"paragraph": {
+					"rich_text": [
+						{
+							"type": "text",
+							"text": {
+								"content": "DONE_TASKS"
+							}
+						}
+					]
+				}
+			}
+		]
 	}`
 
 	properties := strings.Replace(propertiesTemplate, "DATABASE_ID", databaseId, 1)
