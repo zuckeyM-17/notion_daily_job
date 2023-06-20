@@ -1,0 +1,30 @@
+on:
+  schedule:
+    - cron: "0 14 * * 1-6"
+
+jobs:
+  create_daily_review:
+    name: Create Daily Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+
+      - name: Run Script
+        env:
+          NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
+          DAILY_TASK_DATABASE_ID: ${{ secrets.DAILY_TASK_DATABASE_ID }}
+        run: |
+          go run create_daily_review/main.go
+
